@@ -1,0 +1,6 @@
+{% extends "base.html" %} {% block content %}
+<h1>Profile page</h1>
+<button>Update Profile</button>
+<h4>Nama: {{ current_user.name }}!</h4>
+<h4>Email: {{ current_user.email }}!</h4>
+{% endblock %}
