@@ -1,10 +1,76 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from werkzeug.security import generate_password_hash, check_password_hash
-from ..models.UserModel import UserModel
+from ..models.UserModel import UserModel, OAuthModel
 from src.extensions import db
-from flask_login import login_user, logout_user, login_required
+from flask_login import login_user, logout_user, current_user
+
+from sqlalchemy.orm.exc import NoResultFound
+
+# OAuth Library
+from flask_dance.contrib.google import make_google_blueprint
+from flask_dance.consumer.storage.sqla import SQLAlchemyStorage
+from flask_dance.consumer import oauth_authorized, oauth_error
+
 
 auth = Blueprint('auth', __name__)
+
+
+google_login = make_google_blueprint(
+    scope=["profile", "email"],
+    storage=SQLAlchemyStorage(OAuthModel, db.session, user=current_user),
+)
+
+
+@oauth_authorized.connect_via(google_login)
+def google_logged_in(blueprint, token):
+    if not token:
+        flash("Failed to log in.", category="error")
+        return redirect(url_for('auth.login'))
+
+    resp = blueprint.session.get("/oauth2/v1/userinfo")
+    if not resp.ok:
+        msg = "Failed to fetch user info."
+        flash(msg, category="error")
+        return redirect(url_for('auth.login'))
+
+    info = resp.json()
+    user_id = info["id"]
+
+    query = OAuthModel.query.filter_by(
+        provider=blueprint.name, provider_user_id=user_id)
+    try:
+        oauth = query.one()
+        print('ini try')
+    except NoResultFound:
+        print('ini gagal')
+        oauth = OAuthModel(provider=blueprint.name,
+                           provider_user_id=user_id, token=token)
+
+    full_name = info["name"]
+    picture = info["picture"]
+    email = info["email"]
+
+    if oauth.user:
+        login_user(oauth.user)
+    else:
+        user = UserModel(email=email, name=full_name, picture=picture)
+        oauth.user = user
+
+        db.session.add_all([user, oauth])
+        db.session.commit()
+
+        login_user(user)
+
+    return redirect(url_for('main.dashboard'))
+
+
+# notify error
+@oauth_error.connect_via(google_login)
+def google_error(blueprint, message, response):
+    msg = ("OAuth error from {name}! " "message={message} response={response}").format(
+        name=blueprint.name, message=message, response=response
+    )
+    flash(msg, category="error")
 
 
 @auth.route('/login')

@@ -1,8 +1,8 @@
 import os
 
 from flask import Flask
-from flask_login import LoginManager
 from src.config import env_config
+from .models.UserModel import login_manager
 
 
 def create_app(config_name):
@@ -16,15 +16,9 @@ def create_app(config_name):
 
     db.init_app(app)
 
-    login_manager = LoginManager()
-    login_manager.login_view = 'auth.login'
     login_manager.init_app(app)
 
     from .models.UserModel import UserModel
-
-    @login_manager.user_loader
-    def load_user(user_id):
-        return UserModel.query.get(int(user_id))
 
     with app.app_context():
         db.create_all()
@@ -32,6 +26,10 @@ def create_app(config_name):
     # blueprint auth
     from .resources.auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint)
+
+    # blueprint google auth
+    from .resources.auth import google_login
+    app.register_blueprint(google_login, url_prefix="/login-google")
 
     # blueprint
     from .resources.main import main as main_blueprint
