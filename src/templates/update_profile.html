@@ -1,0 +1,26 @@
+{% extends "base.html" %} {% block content %}
+<h1>File Upload</h1>
+{% with messages = get_flashed_messages() %} {% if messages %}
+<div>{{ messages[0] }}</div>
+{% endif %} {% endwith %}
+<form
+  method="POST"
+  action="{{ url_for('main.post_update_profile') }}"
+  enctype="multipart/form-data"
+>
+  <input type="file" name="file" accept="image/*" />
+  <input type="text" value="{{ current_user.name }}" name="name" />
+  <input type="email" value="{{ current_user.email }}" name="email" />
+  {% if current_user.password == None %}
+  <input
+    type="password"
+    value=""
+    placeholder="password not set"
+    name="password"
+  />
+  {% else %}
+  <input type="password" value="{{ current_user.password }}" name="password" />
+  {% endif %}
+  <button type="submit">Submit</button>
+</form>
+{% endblock %}

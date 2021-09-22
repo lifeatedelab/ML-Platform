@@ -1,6 +1,36 @@
 {% extends "base.html" %} {% block content %}
 <h1>Profile page</h1>
-<button>Update Profile</button>
-<h4>Nama: {{ current_user.name }}!</h4>
-<h4>Email: {{ current_user.email }}!</h4>
+<button>
+  <a href="{{ url_for('main.update_profile') }}">Update Profile</a>
+</button>
+<h4>Nama: {{ current_user.name }}</h4>
+<h4>Email: {{ current_user.email }}</h4>
+
+{% if google_acc != None %}
+<h4>Avatar: <img src="{{ current_user.picture  }}" alt="" srcset="" /></h4>
+{% elif not current_user.picture %}
+<h4>Avatar: Not Set</h4>
+{% else %}
+<h4>
+  Avatar:
+  <img
+    src="{{ url_for('static', filename='images/avatar/' + current_user.picture) }}"
+    alt=""
+    srcset=""
+  />
+</h4>
+{% endif %}
+
+<!-- <h4>
+  Avatar: {% if current_user.picture %}
+  <img src="{{ current_user.picture  }}" alt="" srcset="" /> {% else %} Avatar
+  not set {% endif %}
+</h4> -->
+<h4>
+  Password: {% if current_user.password %} ****** {% else %} Not set {% endif %}
+</h4>
+
+<!-- <h1></h1> -->
+
+<!-- {{ url_for('static', filename='images/avatar/2021092209550648.png') }} -->
 {% endblock %}

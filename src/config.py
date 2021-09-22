@@ -10,6 +10,8 @@ class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY")
     REMEMBER_COOKIE_DURATION = timedelta(days=7)
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    # UPLOAD_PATH = basedir + '/static'
+    UPLOAD_AVATAR_EXTENSIONS = ['.jpg', '.png', '.jpeg']
 
     # OAUTHLIB_RELAX_TOKEN_SCOPE = True
     # OAUTHLIB_INSECURE_TRANSPORT = True
