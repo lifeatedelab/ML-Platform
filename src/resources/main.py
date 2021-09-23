@@ -1,6 +1,7 @@
 from flask_login import login_required, current_user
 from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
 from werkzeug.utils import secure_filename
+from werkzeug.security import generate_password_hash, check_password_hash
 from src.extensions import db, save_avatar_file, remove_file_avatar
 from ..models.UserModel import OAuthModel, UserModel
 import os

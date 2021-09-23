@@ -1,4 +1,5 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash
+from flask import Blueprint, render_template, redirect, url_for, request, flash, session
+from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
 from ..models.UserModel import UserModel, OAuthModel
 from src.extensions import db
@@ -51,7 +52,7 @@ def google_logged_in(blueprint, token):
     email = info["email"]
 
     if oauth.user:
-        login_user(oauth.user)
+        login_user(oauth.user, remember=True)
     else:
         user = UserModel(email=email, name=full_name, picture=picture)
         oauth.user = user
@@ -59,7 +60,7 @@ def google_logged_in(blueprint, token):
         db.session.add_all([user, oauth])
         db.session.commit()
 
-        login_user(user)
+        login_user(user, remember=True)
 
     return redirect(url_for('main.dashboard'))
 
@@ -75,6 +76,8 @@ def google_error(blueprint, message, response):
 
 @auth.route('/login')
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('main.dashboard'))
     return render_template('auth/login.html')
 
 

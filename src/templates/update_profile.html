@@ -11,16 +11,6 @@
   <input type="file" name="file" accept="image/*" />
   <input type="text" value="{{ current_user.name }}" name="name" />
   <input type="email" value="{{ current_user.email }}" name="email" />
-  {% if current_user.password == None %}
-  <input
-    type="password"
-    value=""
-    placeholder="password not set"
-    name="password"
-  />
-  {% else %}
-  <input type="password" value="{{ current_user.password }}" name="password" />
-  {% endif %}
   <button type="submit">Submit</button>
 </form>
 {% endblock %}
