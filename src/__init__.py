@@ -3,7 +3,7 @@ import os
 from flask import Flask
 from src.config import env_config
 from .models.UserModel import login_manager
-from .extensions import static_dir, template_dir
+from .helpers import static_dir, template_dir
 
 
 def create_app(config_name):

@@ -1,21 +1,20 @@
 import os
 from datetime import timedelta
-from dotenv import load_dotenv
 basedir = os.path.abspath(os.path.dirname(__file__))
-
-load_dotenv()
 
 
 class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY")
     REMEMBER_COOKIE_DURATION = timedelta(days=7)
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_TRACK_MODIFICATIONS = os.getenv(
+        'SQLALCHEMY_TRACK_MODIFICATIONS')
     # UPLOAD_PATH = basedir + '/static'
     UPLOAD_AVATAR_EXTENSIONS = ['.jpg', '.png', '.jpeg']
 
     # OAUTHLIB_RELAX_TOKEN_SCOPE = True
     # OAUTHLIB_INSECURE_TRANSPORT = True
     # OAUTHLIB_RELAX_TOKEN_SCOPE = True
+    OAUTHLIB_RELAX_TOKEN_SCOPE = os.getenv("OAUTHLIB_RELAX_TOKEN_SCOPE")
     GOOGLE_OAUTH_CLIENT_ID = os.environ.get("GOOGLE_OAUTH_CLIENT_ID")
     GOOGLE_OAUTH_CLIENT_SECRET = os.environ.get("GOOGLE_OAUTH_CLIENT_SECRET")
 
@@ -26,7 +25,7 @@ class Config:
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    # OAUTHLIB_INSECURE_TRANSPORT = os.environ.get("OAUTHLIB_INSECURE_TRANSPORT")
+    OAUTHLIB_INSECURE_TRANSPORT = os.getenv("OAUTHLIB_INSECURE_TRANSPORT")
     SQLALCHEMY_DATABASE_URI = os.environ.get(
         "DEV_DATABASE_URL"
     ) or "sqlite:///" + os.path.join(basedir, "dev.db")
