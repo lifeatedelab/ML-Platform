@@ -1,6 +1,8 @@
 from flask_login import UserMixin, LoginManager
 from flask_dance.consumer.storage.sqla import OAuthConsumerMixin
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from src.extensions import db
+import os
 
 
 class UserModel(UserMixin, db.Model):
@@ -11,6 +13,22 @@ class UserModel(UserMixin, db.Model):
     password = db.Column(db.String(100))
     name = db.Column(db.String(1000))
     picture = db.Column(db.String(1000))
+
+    def get_reset_token(self, expires_sec=1800):
+        s = Serializer(os.getenv('SECRET_KEY'), expires_sec)
+        return s.dumps({'user_id': self.id})
+
+    @staticmethod
+    def verify_reset_token(token):
+        s = Serializer(os.getenv('SECRET_KEY'))
+        try:
+            user_id = s.loads(token)['user_id']
+        except:
+            return None
+        return UserModel.query.get(user_id)
+
+    # def __repr__(self):
+    #     return f"User('{self.email}', '{self.picture}')"
 
 
 class OAuthModel(OAuthConsumerMixin, db.Model):

@@ -3,7 +3,7 @@ import os
 from flask import Flask
 from src.config import env_config
 from .models.UserModel import login_manager
-from .helpers import static_dir, template_dir
+from .util import static_dir, template_dir
 
 
 def create_app(config_name):
@@ -15,7 +15,7 @@ def create_app(config_name):
                 static_folder=static_dir)
     app.config.from_object(env_config[config_name])
 
-    from src.extensions import db
+    from src.extensions import db, mail
 
     db.init_app(app)
 
@@ -26,6 +26,7 @@ def create_app(config_name):
     with app.app_context():
         db.create_all()
 
+    mail.init_app(app)
     # blueprint auth
     from .resources.auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint)

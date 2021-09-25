@@ -1,10 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash, session
-from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
-from ..models.UserModel import UserModel, OAuthModel
-from src.extensions import db
 from flask_login import login_user, logout_user, current_user
-
 from sqlalchemy.orm.exc import NoResultFound
 
 # OAuth Library
@@ -12,6 +8,9 @@ from flask_dance.contrib.google import make_google_blueprint
 from flask_dance.consumer.storage.sqla import SQLAlchemyStorage
 from flask_dance.consumer import oauth_authorized, oauth_error
 
+from ..models.UserModel import UserModel, OAuthModel
+from src.extensions import db
+from src.util import send_reset_email
 
 auth = Blueprint('auth', __name__)
 
@@ -127,3 +126,46 @@ def signup_post():
 def logout():
     logout_user()
     return redirect(url_for('main.index'))
+
+
+@auth.route("/reset_password", methods=['GET', 'POST'])
+def reset_request():
+    if current_user.is_authenticated:
+        return redirect(url_for('main.dashboard'))
+
+    if request.method == 'POST':
+        email = request.form.get('email')
+        user = UserModel.query.filter_by(email=email).first()
+        if user == None:
+            flash('email not found', category='error')
+            return redirect(url_for('auth.reset_request'))
+
+        send_reset_email(user)
+        flash('An email has been sent with instructions to reset your password.', 'info')
+        return redirect(url_for('auth.login'))
+    else:
+        return render_template('auth/forgot_password.html')
+
+
+@auth.route("/reset_password/<token>", methods=['GET', 'POST'])
+def reset_token(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('main.dashboard'))
+
+    user = UserModel.verify_reset_token(token)
+    if request.method == 'GET':
+        if user is None:
+            flash('That is an invalid or expired token', 'warning')
+            return redirect(url_for('auth.reset_request'))
+        return render_template('auth/reset_password.html', token=token)
+
+    if request.method == 'POST':
+        password = request.form.get('password')
+
+        hashed_password = generate_password_hash(
+            password, method='sha256')
+
+        user.password = hashed_password
+        db.session.commit()
+        flash('Your password has been updated! You are now able to log in', 'success')
+        return redirect(url_for('auth.login'))

@@ -9,6 +9,8 @@ flask-sqlalchemy = "*"
 python-dotenv = "*"
 flask-dance = {extras = ["sqla"], version = "*"}
 blinker = "*"
+flask-mail = "*"
+itsdangerous = "*"
 
 [dev-packages]
 autopep8 = "*"
