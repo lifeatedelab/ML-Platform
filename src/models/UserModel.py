@@ -11,8 +11,14 @@ class UserModel(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100))
-    name = db.Column(db.String(1000))
+    # name = db.Column(db.String(1000))
+    first_name = db.Column(db.String(100))
+    last_name = db.Column(db.String(100))
+    gender = db.Column(db.String(50))
     picture = db.Column(db.String(1000))
+    jalan = db.Column(db.String(1000))
+    kota = db.Column(db.String(1000))
+    provinsi = db.Column(db.String(1000))
 
     def get_reset_token(self, expires_sec=1800):
         s = Serializer(os.getenv('SECRET_KEY'), expires_sec)

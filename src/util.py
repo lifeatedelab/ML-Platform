@@ -35,7 +35,7 @@ def remove_file_avatar(filename):
 def mail_body_forgot_pass(user, token):
     return f"""
     <div>
-        <p>Hi, {user.name}!</p>
+        <p>Hi, {user.first_name}!</p>
         <p>To reset your password, visit the following link:</p>
         <a
         href="{url_for('auth.reset_token', token=token, _external=True)}"

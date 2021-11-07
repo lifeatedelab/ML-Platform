@@ -1,10 +1,13 @@
 {% extends "base.html" %} {% block content %}
 <h1>Profile page</h1>
-<button>
+
+{% with messages = get_flashed_messages() %} {% if messages %}
+<div>{{ messages[0] }}</div>
+{% endif %} {% endwith %}
+
+<!-- <button>
   <a href="{{ url_for('main.update_profile') }}">Update Profile</a>
-</button>
-<h4>Nama: {{ current_user.name }}</h4>
-<h4>Email: {{ current_user.email }}</h4>
+</button> -->
 
 {% if google_acc != None %}
 <h4>
@@ -29,9 +32,77 @@
   <img src="{{ current_user.picture  }}" alt="" srcset="" /> {% else %} Avatar
   not set {% endif %}
 </h4> -->
-<h4>
-  Password: {% if current_user.password %} ****** {% else %} Not set {% endif %}
-</h4>
+<h4>Password: {{ "******" if current_user.password else "Not Set" }}</h4>
+
+<form action="{{ url_for('main.post_update_profile') }}" method="post">
+  <div>
+    <label for="">First Name</label>
+    <input
+      type="text"
+      name="first_name"
+      value="{{ current_user.first_name }}"
+    />
+  </div>
+  <br />
+  <div>
+    <label for="">Last Name</label>
+    <input
+      type="text"
+      name="last_name"
+      value="{{ current_user.last_name if current_user.last_name else '' }}"
+    />
+  </div>
+  <br />
+  <div>
+    <label for="">Email</label>
+    <input type="email" name="email" value="{{ current_user.email }}" />
+  </div>
+  <br />
+  <div>
+    <label for="">Gender</label>
+    <select name="gender" id="">
+      {% if current_user.gender == None %}
+      <option disabled selected>Not Set</option>
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+      {% else %}
+      <option selected value="{{ current_user.gender }}">
+        {{ current_user.gender }}
+      </option>
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+      {% endif %}
+    </select>
+  </div>
+  <br />
+  <div>
+    <label for="">Jalan</label>
+    <input
+      type="text"
+      name="jalan"
+      value="{{ current_user.jalan if current_user.jalan else ''}}"
+    />
+  </div>
+  <br />
+  <div>
+    <label for="">Kota/Kabupaten</label>
+    <input
+      type="text"
+      name="kota"
+      value="{{ current_user.kota if current_user.kota else ''}}"
+    />
+  </div>
+  <br />
+  <div>
+    <label for="">Provinsi</label>
+    <input
+      type="text"
+      name="provinsi"
+      value="{{ current_user.provinsi if current_user.provinsi else ''}}"
+    />
+  </div>
+  <button type="submit">Submit</button>
+</form>
 
 <!-- <h1></h1> -->
 

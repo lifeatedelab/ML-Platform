@@ -18,13 +18,15 @@ def index():
 @main.route('/dashboard')
 @login_required
 def dashboard():
-    return render_template('dashboard/dashboard.html', name=current_user.name)
+    full_name = f"{current_user.first_name} {current_user.last_name}"
+    return render_template('dashboard/dashboard.html', name=full_name)
 
 
 @main.route('/profile')
 @login_required
 def profile():
     google_acc = OAuthModel.query.filter_by(user_id=current_user.id).first()
+    print(google_acc)
     return render_template('profile.html', google_acc=google_acc)
 
 
@@ -39,31 +41,41 @@ def update_profile():
 def post_update_profile():
     user = UserModel.query.get(current_user.id)
     email = request.form.get('email')
-    name = request.form.get('name')
+    first_name = request.form.get('first_name')
+    last_name = request.form.get('last_name')
+    gender = request.form.get('gender')
+    jalan = request.form.get('jalan')
+    kota = request.form.get('kota')
+    provinsi = request.form.get('provinsi')
 
-    #
-    uploaded_file = request.files['file']
-    filename = secure_filename(uploaded_file.filename)
-    if filename != '':
-        file_ext = os.path.splitext(filename)[1]
+    # uploaded_file = request.files['file']
+    # filename = secure_filename(uploaded_file.filename)
+    # if filename != '':
+    #     file_ext = os.path.splitext(filename)[1]
 
-        if file_ext not in current_app.config['UPLOAD_AVATAR_EXTENSIONS']:
-            flash('JPG, JPEG, PNG', category='error')
-            return redirect(url_for('main.update_profile'))
+    #     if file_ext not in current_app.config['UPLOAD_AVATAR_EXTENSIONS']:
+    #         flash('JPG, JPEG, PNG', category='error')
+    #         return redirect(url_for('main.update_profile'))
 
-        avatar_name = str(current_user.id) + current_user.name + file_ext
+    #     avatar_name = str(current_user.id) + current_user.name + file_ext
 
-        remove_file_avatar(user.picture)
+    #     remove_file_avatar(user.picture)
 
-        user.picture = avatar_name
-        uploaded_file.save(save_avatar_file(avatar_name))
-    #
+    #     user.picture = avatar_name
+    #     uploaded_file.save(save_avatar_file(avatar_name))
 
     try:
         user.email = email
-        user.name = name
+        user.first_name = first_name
+        user.last_name = last_name
+        user.gender = gender
+        user.jalan = jalan
+        user.kota = kota
+        user.provinsi = provinsi
         db.session.commit()
     except:
-        return '<h1>ERROR</h1>'
+        flash('Error')
+        return redirect(url_for('main.profile'))
 
+    flash('Update Success!')
     return redirect(url_for('main.profile'))

@@ -10,13 +10,35 @@
   <form method="POST" action="/signup">
     <div class="field">
       <div class="control">
-        <input type="email" name="email" placeholder="Email" autofocus="" />
+        <input
+          type="text"
+          name="first_name"
+          placeholder="First Name"
+          autofocus=""
+        />
       </div>
     </div>
 
     <div class="field">
       <div class="control">
-        <input type="text" name="name" placeholder="Name" autofocus="" />
+        <input
+          type="text"
+          name="last_name"
+          placeholder="Last Name"
+          autofocus=""
+        />
+      </div>
+    </div>
+
+    <select name="gender" id="" required>
+      <option selected disabled>Gender</option>
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+    </select>
+
+    <div class="field">
+      <div class="control">
+        <input type="email" name="email" placeholder="Email" autofocus="" />
       </div>
     </div>
 

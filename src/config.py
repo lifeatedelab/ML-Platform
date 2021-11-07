@@ -1,6 +1,15 @@
+from dotenv import load_dotenv
 import os
+from pathlib import Path
 from datetime import timedelta
 basedir = os.path.abspath(os.path.dirname(__file__))
+
+basepath = Path()
+BASE = str(basepath.cwd())
+
+# Load the environment variables
+envars = basepath.cwd() / '.env'
+load_dotenv(envars)
 
 
 class Config:
@@ -16,14 +25,14 @@ class Config:
     # OAUTHLIB_RELAX_TOKEN_SCOPE = True
     OAUTHLIB_RELAX_TOKEN_SCOPE = os.getenv("OAUTHLIB_RELAX_TOKEN_SCOPE")
     GOOGLE_OAUTH_CLIENT_ID = os.environ.get("GOOGLE_OAUTH_CLIENT_ID")
+    print("ID", GOOGLE_OAUTH_CLIENT_ID)
     GOOGLE_OAUTH_CLIENT_SECRET = os.environ.get("GOOGLE_OAUTH_CLIENT_SECRET")
-
-    MAIL_SERVER = os.environ.get('MAIL_SERVER')
-    MAIL_PORT = os.environ.get('MAIL_PORT')
-    MAIL_USE_SSL = os.environ.get('MAIL_USE_SSL')
+    MAIL_SERVER = os.getenv('MAIL_SERVER')
+    MAIL_PORT = os.getenv('MAIL_PORT')
+    MAIL_USE_SSL = os.getenv('MAIL_USE_SSL')
     # MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS')
-    MAIL_USERNAME = os.environ.get('EMAIL_USER')
-    MAIL_PASSWORD = os.environ.get('EMAIL_PASS')
+    MAIL_USERNAME = os.getenv('EMAIL_USER')
+    MAIL_PASSWORD = os.getenv('EMAIL_PASS')
 
     @staticmethod
     def init_app(app):

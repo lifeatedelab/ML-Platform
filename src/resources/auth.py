@@ -46,14 +46,17 @@ def google_logged_in(blueprint, token):
         oauth = OAuthModel(provider=blueprint.name,
                            provider_user_id=user_id, token=token)
 
-    full_name = info["name"]
+    first_name = info["given_name"]
+    last_name = info["family_name"]
+    # full_name = info["name"]
     picture = info["picture"]
     email = info["email"]
 
     if oauth.user:
         login_user(oauth.user, remember=True)
     else:
-        user = UserModel(email=email, name=full_name, picture=picture)
+        user = UserModel(email=email, first_name=first_name,
+                         last_name=last_name, picture=picture)
         oauth.user = user
 
         db.session.add_all([user, oauth])
@@ -84,7 +87,7 @@ def login():
 def login_post():
     email = request.form.get('email')
     password = request.form.get('password')
-    remember = True if request.form.get('remember') else False
+    # remember = True if request.form.get('remember') else False
 
     user = UserModel.query.filter_by(email=email).first()
 
@@ -92,7 +95,7 @@ def login_post():
         flash('Login Unsuccessful! Please check your login details and try again.')
         return redirect(url_for('auth.login'))
 
-    login_user(user, remember=remember)
+    login_user(user, remember=True)
     return redirect(url_for('main.dashboard'))
 
 
@@ -104,8 +107,10 @@ def signup():
 @auth.route('/signup', methods=['POST'])
 def signup_post():
     email = request.form.get('email')
-    name = request.form.get('name')
     password = request.form.get('password')
+    first_name = request.form.get('first_name')
+    last_name = request.form.get('last_name')
+    gender = request.form.get('gender')
 
     user = UserModel.query.filter_by(email=email).first()
 
@@ -113,7 +118,7 @@ def signup_post():
         flash('Email address already exists')
         return redirect(url_for('auth.signup'))
 
-    new_user = UserModel(email=email, name=name,
+    new_user = UserModel(email=email, first_name=first_name, last_name=last_name, gender=gender,
                          password=generate_password_hash(password, method='sha256'))
 
     db.session.add(new_user)
