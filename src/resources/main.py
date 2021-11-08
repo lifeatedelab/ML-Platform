@@ -1,5 +1,5 @@
 from flask_login import login_required, current_user
-from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
+from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app, jsonify
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 from src.extensions import db
@@ -48,6 +48,8 @@ def post_update_profile():
     kota = request.form.get('kota')
     provinsi = request.form.get('provinsi')
 
+    new_password = request.form.get('new_password')
+
     # uploaded_file = request.files['file']
     # filename = secure_filename(uploaded_file.filename)
     # if filename != '':
@@ -72,6 +74,7 @@ def post_update_profile():
         user.jalan = jalan
         user.kota = kota
         user.provinsi = provinsi
+        user.password = generate_password_hash(new_password, method='sha256')
         db.session.commit()
     except:
         flash('Error')
@@ -79,3 +82,14 @@ def post_update_profile():
 
     flash('Update Success!')
     return redirect(url_for('main.profile'))
+
+
+@main.route('/profile/checkpassword', methods=['POST'])
+@login_required
+def check_password():
+    req = request.get_json()
+
+    if check_password_hash(current_user.password, req['current_password']):
+        return jsonify({"status": True})
+
+    return jsonify({"status": False})

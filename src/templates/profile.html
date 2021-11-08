@@ -101,8 +101,110 @@
       value="{{ current_user.provinsi if current_user.provinsi else ''}}"
     />
   </div>
-  <button type="submit">Submit</button>
+  <br />
+  <div>
+    <label for="">Current Password</label>
+    <input
+      type="password"
+      name="current_password"
+      id="current_password"
+      value=""
+      placeholder="Enter current password"
+    />
+  </div>
+  <br />
+  <div>
+    <label for="">New Password</label>
+    <input
+      id="new_password"
+      type="password"
+      name="new_password"
+      value=""
+      placeholder="Enter new password"
+    />
+  </div>
+  <br />
+  <div>
+    <label for="">Confirm Password</label>
+    <input
+      id="new_password2"
+      type="password"
+      name="new_password2"
+      value=""
+      placeholder="Enter new password"
+    />
+  </div>
+  <button type="submit" id="submitProfile">Submit</button>
 </form>
+
+<script>
+  const new_password = document.getElementById("new_password");
+  const new_password2 = document.getElementById("new_password2");
+  const current_password = document.getElementById("current_password");
+  const submit_profile = document.getElementById("submitProfile");
+
+  const checkPassword = () => {
+    if (new_password.value != new_password2.value) {
+      new_password.style.outline = "1px solid red";
+      new_password2.style.outline = "1px solid red";
+      submit_profile.setAttribute("disabled", true);
+      console.log("BEDA");
+    } else {
+      console.log("SAMA");
+      new_password.style.outline = "1px solid green";
+      new_password2.style.outline = "1px solid green";
+      submit_profile.removeAttribute("disabled");
+    }
+  };
+
+  if ("{{current_user.password}}" == "None") {
+    current_password.setAttribute("type", "text");
+    current_password.setAttribute("disabled", true);
+    current_password.value = "Not Set";
+  } else {
+    current_password.setAttribute("type", "password");
+  }
+
+  new_password2.addEventListener("keyup", function () {
+    checkPassword();
+  });
+  new_password.addEventListener("keyup", function () {
+    checkPassword();
+  });
+
+  const isPasswordMatch = async () => {
+    fetch("/profile/checkpassword", {
+      method: "POST",
+      cache: "no-cache",
+      headers: new Headers({
+        "content-type": "application/json",
+      }),
+      body: JSON.stringify({
+        current_password: current_password.value,
+        new_password: new_password.value,
+      }),
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        if (data.status) {
+          current_password.style.outline = "1px solid green";
+          submit_profile.removeAttribute("disabled");
+        } else {
+          current_password.style.outline = "1px solid red";
+          submit_profile.setAttribute("disabled", true);
+        }
+      })
+      .catch((err) => {
+        console.log("ERROR:", err);
+      });
+  };
+
+  current_password.addEventListener("keyup", async () => {
+    isPasswordMatch();
+  });
+</script>
 
 <!-- <h1></h1> -->
 
