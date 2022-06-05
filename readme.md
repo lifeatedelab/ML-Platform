@@ -1,2 +1,2 @@
-## About this Branch
-Branch ini didedikasikan untuk membuat flask lebih flexible dan tidak bergantung dengan 1 file app.py saja
+## About this Project
+Project ini simpelnya ingin menyederhanakan proses pembuaatan dan training model yang awalnya harus dilakukan secara manual menjadi otomatis menggunakan GUI yang mudah digunakan bagi user yang masih awam tentang seluk beluk perkodingan di dunia machine learning
