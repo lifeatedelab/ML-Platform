@@ -1,7 +1,8 @@
-from flask import Flask, render_template, url_for, redirect
+from flask import Flask, render_template, request, url_for, redirect
 from flask_login import LoginManager, login_required
 from models import db, User
-from auth.auth import auth, bcrypt
+from auth.auth import auth, bcrypt, login
+import tensorflow as tf
 
 app = Flask(__name__)
 app.register_blueprint(auth, url_prefix="/auth")
@@ -27,6 +28,14 @@ def home():
 @login_required
 def dashboard():
     return render_template('dashboard.html')
+
+@app.route('/predict', methods=['POST'])
+@login_required
+def predict():
+    data = [int(request.form.get('input'))]
+    model = tf.keras.models.load_model('resources/model/first_model.h5')
+    result = model.predict(data)
+    return render_template('prediction.html', result = int(result[0][0]))
 
 if __name__ == "__main__":
     app.run(debug=True)

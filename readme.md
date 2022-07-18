@@ -1,2 +1,2 @@
 ## About this Project
-Project ini simpelnya ingin menyederhanakan proses pembuaatan dan training model yang awalnya harus dilakukan secara manual menjadi otomatis menggunakan GUI yang mudah digunakan bagi user yang masih awam tentang seluk beluk perkodingan di dunia machine learning
+Project ini simpelnya ingin menyederhanakan proses pembuatan dan training model yang awalnya harus dilakukan secara manual menjadi otomatis menggunakan GUI yang mudah digunakan bagi user yang masih awam tentang seluk beluk perkodingan di dunia machine learning
